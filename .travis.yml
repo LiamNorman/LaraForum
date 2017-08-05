@@ -32,6 +32,7 @@ before_install:
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - printf "\n" | pecl install -f redis
   - composer install --dev --prefer-source --no-interaction
+  - cp .env.example .env
   - php artisan key:generate
   - php artisan migrate --seed
   - travis_retry composer self-update
