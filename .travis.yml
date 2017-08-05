@@ -31,13 +31,23 @@ before_install:
   - phpenv config-rm xdebug.ini || true
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - printf "\n" | pecl install -f redis
+  - cp .env.ci .env
+  - composer install --dev --prefer-source --no-interaction
   - php artisan key:generate
-  - php artisan config:clear
+  - php artisan migrate --seed
   - travis_retry composer self-update
 
 install:
-  - if [[ $setup = 'basic' ]]; then travis_retry composer install --no-interaction --prefer-dist --no-suggest; fi
-  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
+  - vendor/bin/phpmd app text codesize design naming unusedcode
+  - vendor/bin/phpunit --testdox --coverage-text tests
 
 script: vendor/bin/phpunit
+
+notifications:
+  email:
+    recipients:
+      - lnorman137@gmail.com
+    on_success: always
+    on_failure: always
+
+language: php
