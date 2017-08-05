@@ -1,0 +1,59 @@
+language: php
+
+php:
+  - 7.1
+
+env:
+  global:
+    - setup=basic
+    - APP_ENV=staging
+    - APP_DEBUG=true
+    - APP_KEY=xxxx
+    - DB_CONNECTION=sqlite
+    - CACHE_DRIVER=file
+    - SESSION_DRIVER=file
+    - QUEUE_DRIVER=sync
+
+matrix:
+  allow_failures:
+    - php: 7.1
+  fast_finish: true
+  include:
+    - php: 7.1
+      env: setup=lowest
+    - php: 7.1
+      env: setup=stable
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+services:
+#  - memcached
+#  - redis-server
+
+before_install:
+  - phpenv config-rm xdebug.ini || true
+#  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+#  - printf "\n" | pecl install -f redis
+  - composer install --dev --prefer-source --no-interaction
+  - php artisan key:generate
+  - php artisan migrate --seed
+  - travis_retry composer self-update
+
+install:
+  - vendor/bin/phpmd app text codesize design naming unusedcode
+  - vendor/bin/phpunit --testdox --coverage-text tests
+
+script: vendor/bin/phpunit
+
+notifications:
+  email:
+    recipients:
+      - lnorman137@gmail.com
+    on_success: always
+    on_failure: always
+
+language: php
