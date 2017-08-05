@@ -17,6 +17,15 @@ env:
 
 sudo: false
 
+before_install:
+  - phpenv config-rm xdebug.ini || true
+#  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+#  - printf "\n" | pecl install -f redis
+  - composer install --dev --prefer-source --no-interaction
+  - php artisan key:generate
+  - php artisan migrate --seed
+  - travis_retry composer self-update
+
 install:
 - if [[ $setup = 'basic' ]]; then travis_retry composer install --no-interaction --prefer-source; fi
 - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-source --no-interaction --prefer-stable; fi
