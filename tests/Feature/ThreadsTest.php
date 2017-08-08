@@ -27,5 +27,21 @@ class ThreadsTest extends TestCase
         $response->assertStatus(200);
 
     }
-    
+
+    /**
+     * GET /threads/{id}
+     *
+     * @return void
+     *
+     * @test
+     */
+
+    public function a_user_can_view_one_thread()
+    {
+        $thread = factory('App\Thread')->create();
+
+        $response = $this->get('/threads/' . $thread->id);
+        $response->assertSee($thread->title);
+    }
+
 }
