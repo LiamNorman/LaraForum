@@ -35,6 +35,7 @@ class ThreadsTest extends TestCase
      *
      * @test
      */
+    
     public function a_user_can_view_one_thread()
     {
         $thread = factory('App\Thread')->create();
