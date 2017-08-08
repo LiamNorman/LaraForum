@@ -13,7 +13,7 @@ before_script:
   - composer self-update
   - composer install --no-interaction
   - php artisan key:generate
-  - php artisan config:clear
+  - php artisan migrate --seed
 
 script:
   - vendor/bin/phpunit
@@ -24,4 +24,3 @@ notifications:
       - lnorman137@gmail.com
     on_success: always
     on_failure: always
-    
